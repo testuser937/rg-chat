@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.2" last-position="0,0" last-zoom="1" max-obj-count="4"
+	 default-schema="public" default-owner="postgres">
+<database name="new_database" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="user" layer="0" collapse-mode="2" max-obj-count="4">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="400" y="822"/>
+	<column name="id" not-null="true"
+	 identity-type="BY DEFAULT">
+		<type name="int8" length="0"/>
+	</column>
+	<column name="login">
+		<type name="varchar" length="128"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="varchar" length="32"/>
+	</column>
+	<column name="clan_id">
+		<type name="int8" length="0"/>
+	</column>
+	<constraint name="user_pk" type="pk-constr" table="public.&quot;user&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="user_login_un" type="uq-constr" table="public.&quot;user&quot;">
+		<columns names="login" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="user_clan_un" type="uq-constr" table="public.&quot;user&quot;">
+		<columns names="id,clan_id" ref-type="src-columns"/>
+	</constraint>
+	<initial-data>
+<![CDATA[id•login•password•clan_id⸣
+1•admin•4dd9777d1b5bab263189083f3a39b0f3•1⸣
+2•user•4dd9777d1b5bab263189083f3a39b0f3•2]]>
+	</initial-data>
+</table>
+
+<table name="clan" layer="0" collapse-mode="2" max-obj-count="3">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="732" y="677"/>
+	<column name="id" not-null="true"
+	 identity-type="BY DEFAULT">
+		<type name="int8" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="128"/>
+	</column>
+	<column name="description">
+		<type name="varchar" length="512"/>
+	</column>
+	<constraint name="clan_un" type="uq-constr" table="public.clan">
+		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="clan_pk" type="pk-constr" table="public.clan">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<initial-data>
+<![CDATA[id•name•description⸣
+1•Клан 1•⸣
+2•Клан 2•⸣
+3•Клан 3•]]>
+	</initial-data>
+</table>
+
+<table name="message" layer="0" collapse-mode="2" max-obj-count="6">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="33" y="606"/>
+	<column name="id" not-null="true"
+	 identity-type="BY DEFAULT">
+		<type name="int8" length="0"/>
+	</column>
+	<column name="chat_id" not-null="true">
+		<type name="int8" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="text" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="dt" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+</table>
+
+<table name="chat" layer="0" collapse-mode="2" max-obj-count="3">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="414" y="445"/>
+	<column name="id" not-null="true"
+	 identity-type="BY DEFAULT">
+		<type name="int8" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="64"/>
+	</column>
+	<column name="clan_id" not-null="true">
+		<type name="int8" length="0"/>
+	</column>
+	<constraint name="chat_pk" type="pk-constr" table="public.chat">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="chat_name_un" type="uq-constr" table="public.chat">
+		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+	<initial-data>
+<![CDATA[id•name•clan_id⸣
+1•Чат клана 1•1⸣
+2•Чат клана 2•2⸣
+3•Второй чат клана 2•2⸣
+4•Чат клана 3•3]]>
+	</initial-data>
+</table>
+
+<constraint name="user_clan_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.clan" table="public.&quot;user&quot;">
+	<columns names="clan_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="message_chat_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.chat" table="public.message">
+	<columns names="chat_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="message_user_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.&quot;user&quot;" table="public.message">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="char_clan_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.clan" table="public.chat">
+	<columns names="clan_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_user_clan" type="relfk" layer="0"
+	 src-table="public.&quot;user&quot;"
+	 dst-table="public.clan" reference-fk="user_clan_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_chat_clan" type="relfk" layer="0"
+	 src-table="public.chat"
+	 dst-table="public.clan" reference-fk="char_clan_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_message_chat" type="relfk" layer="0"
+	 src-table="public.message"
+	 dst-table="public.chat" reference-fk="message_chat_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_message_user" type="relfk" layer="0"
+	 src-table="public.message"
+	 dst-table="public.&quot;user&quot;" reference-fk="message_user_fk"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

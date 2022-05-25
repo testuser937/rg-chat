@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rg.Web.Api", "Rg.Web.Api\Rg.Web.Api.csproj", "{DDA9E940-D229-42BA-9C8C-EF7A390CA889}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rg.Db", "Rg.Db\Rg.Db.csproj", "{6284906B-37D2-4A8C-8174-29CED7DEDB50}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDA9E940-D229-42BA-9C8C-EF7A390CA889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDA9E940-D229-42BA-9C8C-EF7A390CA889}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDA9E940-D229-42BA-9C8C-EF7A390CA889}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDA9E940-D229-42BA-9C8C-EF7A390CA889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6284906B-37D2-4A8C-8174-29CED7DEDB50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6284906B-37D2-4A8C-8174-29CED7DEDB50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6284906B-37D2-4A8C-8174-29CED7DEDB50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6284906B-37D2-4A8C-8174-29CED7DEDB50}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
