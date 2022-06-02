@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Rg.Web.Api.Attributes;
@@ -11,7 +12,7 @@ namespace Rg.Web.Api.Controllers;
 
 [ApiController]
 [Route("api/chat")]
-[Authorize]
+//[Authorize]
 [Consumes("application/json")]
 [Produces("application/json")]
 public class ChatController : ControllerBase

@@ -40,9 +40,9 @@ axios.interceptors.response.use(
 Vue.use(NotificationHub)
 
 new Vue({
-    vuetify,
     router,
     store,
+    vuetify,
     render: h => h(App)
 }).$mount('#app');
 

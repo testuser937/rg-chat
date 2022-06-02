@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Rg.Web.Api.Attributes;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Rg.Web.Api.Models;
+using Rg.Web.Api.Repository;
 using Rg.Web.Api.Services;
 
 namespace Rg.Web.Api.Controllers;
@@ -20,8 +24,26 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("authenticate")]
-    public async Task<IActionResult> Authenticate(AuthRequest model)
+    public async Task<IActionResult> Authenticate(AuthRequest model, [FromServices] IUserRepository userRepository)
     {
+        var r = await _userService.Authenticate(model);
+        if (r == null)
+        {
+            return Unauthorized("Username or password is incorrect");
+        }
+
+        var claims = new List<Claim> {new(ClaimTypes.Name, model.Login) };
+        // создаем JWT-токен
+        var jwt = new JwtSecurityToken(
+            issuer: AuthOptions.ISSUER,
+            audience: AuthOptions.AUDIENCE,
+            claims: claims,
+            expires: DateTime.UtcNow.Add(TimeSpan.FromDays(1)),
+            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+
+        var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+        return Ok(new AuthResponse() {ClanId = r.ClanId, Id = r.Id, Login = r.Login, Token = token});
+
         var response = await _userService.Authenticate(model);
 
         if (response == null)

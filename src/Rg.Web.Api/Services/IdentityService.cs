@@ -1,4 +1,5 @@
-﻿using Rg.Web.Api.Models;
+﻿using System.Security.Claims;
+using Rg.Web.Api.Models;
 using Rg.Web.Api.Repository;
 
 namespace Rg.Web.Api.Services;
@@ -26,11 +27,10 @@ public class IdentityService : IIdentityService
 
     private string GetUserLogin()
     {
-        var user = _httpContextAccessor.HttpContext.Items["User"] as User;
-        var userLogin = user?.Login;
-        if (!string.IsNullOrWhiteSpace(userLogin))
+        var login = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x=>x.Type == ClaimTypes.Name).Value;
+        if (!string.IsNullOrWhiteSpace(login))
         {
-            return userLogin;
+            return login;
         }
 
         throw new Exception("Пользователь не авторизован");

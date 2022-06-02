@@ -36,7 +36,7 @@ const router = new VueRouter({
     routes
 })
 
-// Auth watch hooks
+//Auth watch hooks
 router.beforeEach((to, from, next) => {
     if (to.matched.some(route => route.meta.guest)) {
         next();

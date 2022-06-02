@@ -1,18 +1,17 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Rg.Web.Api.Attributes;
 using Rg.Web.Api.Hubs;
 using Rg.Web.Api.Models;
-using Rg.Web.Api.Repository;
 using Rg.Web.Api.Services;
 
 namespace Rg.Web.Api.Controllers;
 
 [ApiController]
 [Route("api/message")]
-[Authorize]
+//[Authorize]
 [Consumes("application/json")]
 [Produces("application/json")]
 public class MessageController : ControllerBase

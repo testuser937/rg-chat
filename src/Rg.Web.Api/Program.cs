@@ -1,18 +1,62 @@
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Rg.Db;
 using Rg.Web.Api.Hubs;
-using Rg.Web.Api.Middlewares;
 using Rg.Web.Api.Repository;
 using Rg.Web.Api.Services;
 using Rg.Web.Api.Settings;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    ContentRootPath = AppContext.BaseDirectory,
+    Args = args,
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        // указывает, будет ли валидироваться издатель при валидации токена
+        ValidateIssuer = true,
+        // строка, представляющая издателя
+        ValidIssuer = AuthOptions.ISSUER,
+        // будет ли валидироваться потребитель токена
+        ValidateAudience = true,
+        // установка потребителя токена
+        ValidAudience = AuthOptions.AUDIENCE,
+        // будет ли валидироваться время существования
+        ValidateLifetime = true,
+        // установка ключа безопасности
+        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        // валидация ключа безопасности
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.FromSeconds(5),
+    };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+
 
 var appSettings = builder.Configuration.Get<AppSettings>();
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 builder.Services.AddCors(o =>
     o.AddPolicy("MyPolicy", policy => policy
@@ -20,11 +64,6 @@ builder.Services.AddCors(o =>
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()));
-
-builder.Services
-    .AddControllers()
-    .AddJsonOptions(options =>
-        options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -83,13 +122,18 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddSingleton<ChatHub>();
 
 builder.Services
-    .AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; })
+    .AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true;})
     .AddNewtonsoftJsonProtocol(options =>
     {
         options.PayloadSerializerSettings.ContractResolver = new DefaultContractResolver();
     });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -100,7 +144,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("MyPolicy");
 
-//app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseExceptionHandler(a => a.Run(async context =>
 {
@@ -114,7 +159,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 
-app.UseMiddleware<JwtMiddleware>();
+//app.UseMiddleware<JwtMiddleware>();
 
 app.UseAuthorization();
 
@@ -125,3 +170,13 @@ app.UseEndpoints(endpoints =>
 });
 
 app.Run();
+
+
+public class AuthOptions
+{
+    public const string ISSUER = "MyAuthServer"; // издатель токена
+    public const string AUDIENCE = "MyAuthClient"; // потребитель токена
+    const string KEY = "mysupersecret_secretkey!123";   // ключ для шифрации
+    public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
+        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(KEY));
+}
